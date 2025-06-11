@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Livro Dia dos Namorados</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .audio-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 28px;
+      color: #e91e63;
+      z-index: 1000;
+    }
+
+    .audio-button:hover {
+      color: #ad1457;
+    }
+  </style>
+</head>
+
+<body>
+  <audio id="bgAudio" loop>
+    <source src="/audio/videoplayback.mp3" type="audio/mp3" />
+    Seu navegador não suporta o elemento de áudio.
+  </audio>
+
+  <!-- Botão de áudio com ícone -->
+  <button class="audio-button" id="audioToggleBtn" title="Tocar/Pausar Música">
+    🔊
+  </button>
+
+  <div class="book" id="book">
+    <section class="page cover active">
+      <img src="/imagens/495269527_1384812995973344_6777013939260650444_n.jpg" alt="Capa" />
+      <h1>Para minha PRINCESA</h1>
+      <p>❤️</p>
+      <button id="openBookBtn">Abrir Livro</button>
+    </section>
+
+    <section class="page content">
+      <h2>Minha Princesa</h2>
+      <p>
+        Oi meu amor, "Feliz Dia dos Namorados" kaakakak
+        Mesmo que ainda não estejamos tendo um relacionamento de namoro, não poderia deixar essa data passar em branco,
+        porque já sinto no coração um desejo enorme de construir um futuro lindo ao seu lado. Quero te fazer muito
+        feliz, cuidar de você e compartilhar cada momento juntos.
+        Que nossa confiança e esperança em Deus nos guiem sempre, porque sei que Ele tem planos maravilhosos para nós.
+        Te amo demais, meu amor, hoje e sempre!
+      </p>
+      <button id="closeBookBtn">Voltar para Capa</button>
+      <img src="/imagens/494817747_991109966303816_2417273004004972299_n.jpg" alt="Nós dois" />
+    </section>
+  </div>
+
+  <script>
+    const openBtn = document.getElementById('openBookBtn');
+    const closeBtn = document.getElementById('closeBookBtn');
+    const cover = document.querySelector('.cover');
+    const content = document.querySelector('.content');
+    const book = document.getElementById('book');
+    const audio = document.getElementById('bgAudio');
+    const audioBtn = document.getElementById('audioToggleBtn');
+
+    // Áudio: iniciar ao carregar
+    window.addEventListener('load', () => {
+      audio.play().catch(() => {
+        // Caso autoplay bloqueado
+        audioBtn.innerText = '🔇';
+      });
+    });
+
+    // Alternar música
+    audioBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        audioBtn.innerText = '🔊';
+      } else {
+        audio.pause();
+        audioBtn.innerText = '🔇';
+      }
+    });
+
+    openBtn.addEventListener('click', () => {
+      virarParaConteudo();
+    });
+
+    closeBtn.addEventListener('click', () => {
+      virarParaCapa();
+    });
+
+    function virarParaConteudo() {
+      cover.classList.add('flip-out');
+      setTimeout(() => {
+        cover.classList.remove('active', 'flip-out');
+        content.classList.add('active', 'flip-in');
+      }, 600);
+      setTimeout(() => {
+        content.classList.remove('flip-in');
+      }, 1200);
+    }
+
+    function virarParaCapa() {
+      content.classList.add('flip-out-reverse');
+      setTimeout(() => {
+        content.classList.remove('active', 'flip-out-reverse');
+        cover.classList.add('active', 'flip-in-reverse');
+      }, 600);
+      setTimeout(() => {
+        cover.classList.remove('flip-in-reverse');
+      }, 1200);
+    }
+
+    // Swipe detection para mobile/tablet
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function handleGesture() {
+      const swipeThreshold = 50;
+
+      if (touchEndX < touchStartX - swipeThreshold) {
+        if (cover.classList.contains('active')) virarParaConteudo();
+      }
+
+      if (touchEndX > touchStartX + swipeThreshold) {
+        if (content.classList.contains('active')) virarParaCapa();
+      }
+    }
+
+    book.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    book.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleGesture();
+    });
+  </script>
+</body>
+
+</html>
